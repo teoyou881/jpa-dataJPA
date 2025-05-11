@@ -1,6 +1,7 @@
 package spring.data_jpa.repository;
 
-import org.assertj.core.api.Assertions;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -23,13 +24,37 @@ class MemberJpaRepositoryTest {
 
     Member findMember = memberJpaRepository.find(saveMember.getId());
 
-    Assertions.assertThat(findMember)
-              .isEqualTo(saveMember);
-    Assertions.assertThat(findMember.getId())
-              .isEqualTo(saveMember.getId());
-    Assertions.assertThat(findMember.getUsername())
-              .isEqualTo(saveMember.getUsername());
-    Assertions.assertThat(findMember)
-              .isEqualTo(member);
+    assertThat(findMember).isEqualTo(saveMember);
+    assertThat(findMember.getId()).isEqualTo(saveMember.getId());
+    assertThat(findMember.getUsername()).isEqualTo(saveMember.getUsername());
+    assertThat(findMember).isEqualTo(member);
   }
+
+  @Test
+  public void basicCRUD() {
+    Member memberA = new Member("memberA");
+    Member memberB = new Member("memberB");
+
+    memberJpaRepository.save(memberA);
+    memberJpaRepository.save(memberB);
+
+    Member findMemberA = memberJpaRepository.findById(memberA.getId())
+                                            .get();
+    Member findMemberB = memberJpaRepository.findById(memberB.getId())
+                                            .get();
+
+    assertThat(findMemberA).isEqualTo(memberA);
+    assertThat(findMemberB).isEqualTo(memberB);
+
+    long count = memberJpaRepository.count();
+    assertThat(count).isEqualTo(2);
+
+    memberJpaRepository.delete(findMemberA);
+    memberJpaRepository.delete(findMemberB);
+
+    count = memberJpaRepository.count();
+    assertThat(count).isEqualTo(0);
+  }
+
+
 }
