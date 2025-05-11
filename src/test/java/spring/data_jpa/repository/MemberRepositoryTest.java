@@ -124,4 +124,6 @@ class MemberRepositoryTest {
     Member memberC = memberRepository.findOptionalByUsername("CCC").orElseGet(() -> new Member("ccc"));
     System.out.println("memberC = " + memberC);
   }
+
+
 }
