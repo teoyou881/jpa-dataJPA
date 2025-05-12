@@ -2,6 +2,8 @@ package spring.data_jpa.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,6 +29,8 @@ class MemberRepositoryTest {
   MemberRepository memberRepository;
   @Autowired
   TeamJpaRepository teamJpaRepository;
+  @PersistenceContext
+  EntityManager em;
 
 
   @BeforeEach
@@ -155,6 +159,23 @@ class MemberRepositoryTest {
     assertThat(page.hasNext()).isTrue();
     assertThat(page.hasPrevious()).isFalse();
 
+  }
+
+  // 벌크 업데이트를 칠 때는 조심해야 한다.
+  // 벌크 업데이트를 해도 영속성 컨텍스트에 멤버가 여전히 남아있기 때문에, 업데이트한 내용을 가져오지 않는다.
+  // 아니면 @Modifying 옵션을 손보자. clearAutomatically=true
+  @Test
+  public void bulkUpdate() {
+
+    int resultCount = memberRepository.bulkAgePlus(30);
+    // em.flush();
+    // em.clear();
+
+    List<Member> aaa = memberRepository.findByUsername("CCC");
+    Member member = aaa.get(0);
+    System.out.println("member = " + member);
+
+    assertThat(resultCount).isEqualTo(2);
   }
 
 }

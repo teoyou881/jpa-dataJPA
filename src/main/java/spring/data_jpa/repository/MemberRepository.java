@@ -5,6 +5,7 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import spring.data_jpa.dto.MemberDto;
@@ -41,4 +42,12 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
   Optional<Member> findOptionalByUsername(String username);
 
   Page<Member> findByAgeGreaterThan(int age, Pageable pageable);
+
+  // @Modifying 이 없으면, getsingleresult or getreulstlist를 호출한다.
+  // update를 치기 위해서는 @Modifying 이 필요하고, 이 어노테이션이 executeUpdate()를 해준다.
+  // error
+  // org.springframework.dao.InvalidDataAccessApiUsageException: Query executed via 'getResultList()' or 'getSingleResult()' must be a 'select' query [update Member m set m.age=m.age+:age where m.age>=:age]
+  @Modifying(clearAutomatically = true)
+  @Query("update Member m set m.age=m.age+:age where m.age>=:age")
+  int bulkAgePlus(@Param("age") int age);
 }
