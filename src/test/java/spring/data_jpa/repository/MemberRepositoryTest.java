@@ -8,6 +8,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import spring.data_jpa.dto.MemberDto;
@@ -125,5 +129,32 @@ class MemberRepositoryTest {
     System.out.println("memberC = " + memberC);
   }
 
+
+  @Test
+  public void paging() {
+
+    int age = 10;
+    PageRequest pageRequest = PageRequest.of(0, 2, Sort.by(Direction.DESC, "username"));
+
+    // totalCount 쿼리 따로 날릴 필요 없다.
+    Page<Member> page = memberRepository.findByAgeGreaterThan(age, pageRequest);
+
+    List<Member> content = page.getContent();
+    long totalElements = page.getTotalElements();
+    long totalPages = page.getTotalPages();
+    System.out.println("totalElements = " + totalElements);
+    System.out.println("totalPages = " + totalPages);
+    System.out.println("content = " + content);
+
+    assertThat(content.size()).isEqualTo(2);
+    assertThat(page.getTotalElements()).isEqualTo(3);
+    assertThat(page.getTotalPages()).isEqualTo(2);
+    assertThat(page.getNumber()).isEqualTo(0);
+    assertThat(page.isFirst()).isTrue();
+    assertThat(page.isLast()).isFalse();
+    assertThat(page.hasNext()).isTrue();
+    assertThat(page.hasPrevious()).isFalse();
+
+  }
 
 }
