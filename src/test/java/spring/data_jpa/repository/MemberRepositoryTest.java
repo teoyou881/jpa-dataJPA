@@ -48,7 +48,8 @@ class MemberRepositoryTest {
     memberRepository.save(memberA);
     memberRepository.save(memberB);
     memberRepository.save(memberC);
-
+    em.flush();
+    em.clear();
 
   }
 
@@ -178,4 +179,13 @@ class MemberRepositoryTest {
     assertThat(resultCount).isEqualTo(2);
   }
 
+
+  @Test
+  public void findMemberLazy() {
+    List<Member> members = memberRepository.findAll();
+    for (Member member : members) {
+      System.out.println("member = " + member);
+      System.out.println("-> member.team = " + member.getTeam().getClass());
+    }
+  }
 }
