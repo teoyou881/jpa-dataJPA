@@ -16,7 +16,7 @@ import org.springframework.data.repository.query.Param;
 import spring.data_jpa.dto.MemberDto;
 import spring.data_jpa.entity.Member;
 
-public interface MemberRepository extends JpaRepository<Member, Long> {
+public interface MemberRepository extends JpaRepository<Member, Long>, MemberRepositoryCustom {
 
   List<Member> findByUsernameAndAgeGreaterThan(String username, int age);
 
